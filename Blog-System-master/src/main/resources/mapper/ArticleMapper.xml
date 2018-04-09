@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.blog.dao.ArticleDao" >
+  <resultMap id="BaseResultMap" type="com.blog.domain.Article" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="keywords" property="keywords" jdbcType="VARCHAR" />
+    <result column="desci" property="desci" jdbcType="VARCHAR" />
+    <result column="pic" property="pic" jdbcType="VARCHAR" />
+    <result column="click" property="click" jdbcType="INTEGER" />
+    <result column="time" property="time" jdbcType="TIMESTAMP" />
+    <result column="catalog_id" property="catalogId" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.blog.domain.Article" extends="BaseResultMap" >
+    <result column="content" property="content" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, title, keywords, desci, pic, click, time, catalog_id
+  </sql>
+  <sql id="Blob_Column_List" >
+    content
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    *
+    from article
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectLastArticle" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    id,title
+    from article
+    where id &lt; #{id,jdbcType=INTEGER} ORDER BY id desc limit 1;
+  </select>
+
+  <select id="selectNextArticle" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    id,title
+    from article
+    where id &gt; #{id,jdbcType=INTEGER} ORDER BY id ASC limit 1;
+  </select>
+
+
+
+  <select id="selectByWord" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    *
+    from article
+    where title LIKE CONCAT(CONCAT('%', #{word}), '%') OR content  LIKE CONCAT(CONCAT('%', #{word}), '%')
+  </select>
+
+  <select id="queryAll" resultMap="BaseResultMap"  >
+    select *
+    from article
+    ORDER BY id DESC
+  </select>
+
+  <select id="countAllNum" resultType="java.lang.Integer">
+    SELECT count(*) FROM article
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from article
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+  <insert id="insert" parameterType="com.blog.domain.Article" >
+    insert into article (title, keywords,
+      desci, pic, time,
+      catalog_id, content)
+    values (#{title,jdbcType=VARCHAR}, #{keywords,jdbcType=VARCHAR},
+      #{desci,jdbcType=VARCHAR}, #{pic,jdbcType=VARCHAR}, #{time,jdbcType=TIMESTAMP},
+      #{catalogId,jdbcType=INTEGER}, #{content,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.blog.domain.Article" >
+    insert into article
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="keywords != null" >
+        keywords,
+      </if>
+      <if test="desci != null" >
+        desci,
+      </if>
+      <if test="pic != null" >
+        pic,
+      </if>
+      <if test="click != null" >
+        click,
+      </if>
+      <if test="time != null" >
+        time,
+      </if>
+      <if test="catalogId != null" >
+        catalog_id,
+      </if>
+      <if test="content != null" >
+        content,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="keywords != null" >
+        #{keywords,jdbcType=VARCHAR},
+      </if>
+      <if test="desci != null" >
+        #{desci,jdbcType=VARCHAR},
+      </if>
+      <if test="pic != null" >
+        #{pic,jdbcType=VARCHAR},
+      </if>
+      <if test="click != null" >
+        #{click,jdbcType=INTEGER},
+      </if>
+      <if test="time != null" >
+        #{time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="catalogId != null" >
+        #{catalogId,jdbcType=INTEGER},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.blog.domain.Article" >
+    update article
+    <set >
+      <if test="title != null" >
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="keywords != null" >
+        keywords = #{keywords,jdbcType=VARCHAR},
+      </if>
+      <if test="desci != null" >
+        desci = #{desci,jdbcType=VARCHAR},
+      </if>
+      <if test="pic != null" >
+        pic = #{pic,jdbcType=VARCHAR},
+      </if>
+      <if test="click != null" >
+        click = #{click,jdbcType=INTEGER},
+      </if>
+      <if test="time != null" >
+        time = #{time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="catalogId != null" >
+        catalog_id = #{catalogId,jdbcType=INTEGER},
+      </if>
+      <if test="content != null" >
+        content = #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.blog.domain.Article" >
+    update article
+    set title = #{title,jdbcType=VARCHAR},
+      keywords = #{keywords,jdbcType=VARCHAR},
+      desci = #{desci,jdbcType=VARCHAR},
+      pic = #{pic,jdbcType=VARCHAR},
+      click = #{click,jdbcType=INTEGER},
+      time = #{time,jdbcType=TIMESTAMP},
+      catalog_id = #{catalogId,jdbcType=INTEGER},
+      content = #{content,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.blog.domain.Article" >
+    update article
+    set title = #{title,jdbcType=VARCHAR},
+      keywords = #{keywords,jdbcType=VARCHAR},
+      desci = #{desci,jdbcType=VARCHAR},
+      pic = #{pic,jdbcType=VARCHAR},
+      click = #{click,jdbcType=INTEGER},
+      time = #{time,jdbcType=TIMESTAMP},
+      catalog_id = #{catalogId,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
